@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (C) 2010-2012 The University of Manchester See the file "LICENSE" 
+	for license terms. -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:jaxws="http://cxf.apache.org/jaxws"
+	xmlns:cxf="http://cxf.apache.org/core"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd
+	http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
+	http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
+	">
+
+	<description>
+		This is the Spring configuration for the Skeleton web application.
+	</description>
+
+	<import resource="classpath:META-INF/cxf/cxf.xml" />
+	<context:property-placeholder location="classpath:webapp.properties" />
+	<context:annotation-config />
+	<context:component-scan base-package="uk.ac.manchester" />
+	<aop:aspectj-autoproxy proxy-target-class="true" />
+
+	<jaxws:server id="soapService" address="/"
+		serviceClass="uk.ac.manchester.skeleton.WebApplication">
+		<jaxws:serviceBean>
+			<ref bean="webapp" />
+		</jaxws:serviceBean>
+		<jaxws:properties>
+			<entry key="mtom-enabled" value="true" />
+		</jaxws:properties>
+		<jaxws:features>
+			<!-- Full logging of messages; comment out if too much noise! -->
+			<cxf:logging/>
+		</jaxws:features>
+	</jaxws:server>
+
+	<bean id="webapp" class="uk.ac.manchester.skeleton.WebApplication">
+		<property name="configuration" ref="conf" />
+	</bean>
+
+	<!-- Just an example! -->
+	<bean id="conf" class="uk.ac.manchester.skeleton.Configuration">
+		<!-- These properties come from webapp.properties -->
+		<property name="version" value="${app.version}" />
+		<property name="fruit" value="${fruit}" />
+	</bean>
+
+	<bean class="uk.ac.manchester.utils.CallTimeLogger" />
+</beans>
