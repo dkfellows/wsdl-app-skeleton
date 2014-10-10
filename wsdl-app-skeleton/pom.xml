@@ -12,6 +12,7 @@
 		<version.cxf>2.7.7</version.cxf>
 		<version.spring>3.2.5.RELEASE</version.spring>
 		<version.asm>3.3.1</version.asm>
+		<source.encoding>US-ASCII</source.encoding>
 	</properties>
 
 	<dependencies>
@@ -181,6 +182,48 @@
 		<pluginManagement>
 			<plugins>
 				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<configuration>
+						<encoding>${source.encoding}</encoding>
+						<source>1.7</source>
+						<target>1.7</target>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<configuration>
+						<encoding>${source.encoding}</encoding>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-war-plugin</artifactId>
+					<configuration>
+						<webXml>src/main/webapp/WEB-INF/web.xml</webXml>
+					</configuration>
+				</plugin>
+				<!-- This plugin converts an XSD schema to code. -->
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>jaxb2-maven-plugin</artifactId>
+					<version>1.3.1</version>
+					<executions>
+						<execution>
+							<id>xsd2java</id>
+							<goals>
+								<goal>xjc</goal>
+							</goals>
+							<configuration>
+								<outputDirectory>${project.build.directory}/generated-sources/xjc</outputDirectory>
+								<schemaDirectory>${basedir}/src/main/xsd</schemaDirectory>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+				<!-- This plugin is used to push the WAR into a running container. -->
+				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>tomcat-maven-plugin</artifactId>
 					<version>1.1</version>
@@ -188,15 +231,6 @@
 						<!-- Talk to me about setting this up! -->
 						<server>deployhost</server>
 						<path>/skeleton</path>
-					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<configuration>
-						<encoding>US-ASCII</encoding>
-						<source>1.7</source>
-						<target>1.7</target>
 					</configuration>
 				</plugin>
 				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
@@ -224,30 +258,18 @@
 						</lifecycleMappingMetadata>
 					</configuration>
 				</plugin>
-			</plugins>
-		</pluginManagement>
-
-		<defaultGoal>package</defaultGoal>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-				<version>2.4</version>
-				<configuration>
-					<webXml>src/main/webapp/WEB-INF/web.xml</webXml>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-eclipse-plugin</artifactId>
-				<configuration>
-					<additionalProjectnatures>
-						<projectnature>org.springframework.ide.eclipse.core.springnature</projectnature>
-					</additionalProjectnatures>
-					<additionalConfig>
-						<file>
-							<name>.springBeans</name>
-							<content><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+				<!-- This plugin is used to set the project up as a Spring-enabled project. -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-eclipse-plugin</artifactId>
+					<configuration>
+						<additionalProjectnatures>
+							<projectnature>org.springframework.ide.eclipse.core.springnature</projectnature>
+						</additionalProjectnatures>
+						<additionalConfig>
+							<file>
+								<name>.springBeans</name>
+								<content><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <beansProjectDescription>
 	<version>1</version>
 	<pluginVersion>3.3.0.201307091516-RELEASE</pluginVersion>
@@ -260,29 +282,14 @@
 	</configs>
 	</configSets>
 </beansProjectDescription>]]></content>
-						</file>
-					</additionalConfig>
-				</configuration>
-			</plugin>
-			<plugin>
-				<!-- This plugin converts an XSD schema to code. If you're not starting from an XSD schema, delete it. -->
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>jaxb2-maven-plugin</artifactId>
-				<version>1.3.1</version>
-				<executions>
-					<execution>
-						<id>xsd2java</id>
-						<goals>
-							<goal>xjc</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${project.build.directory}/generated-sources/xjc</outputDirectory>
-							<schemaDirectory>${basedir}/src/main/xsd</schemaDirectory>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
+							</file>
+						</additionalConfig>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
+		<defaultGoal>package</defaultGoal>
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
